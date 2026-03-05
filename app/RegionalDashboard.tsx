@@ -7,82 +7,17 @@ import {
   Newspaper, Radio, AlertTriangle, Play, Download 
 } from 'lucide-react';
 
+// Import the JSON file from the same directory
+import dashboardData from './data.json'; 
+
 // ==========================================
-// 1. FONTS (Next.js App Router setup)
+// 1. FONTS
 // ==========================================
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const vazirmatn = Vazirmatn({ subsets: ['arabic'], display: 'swap' });
 
 // ==========================================
-// 2. MOCK DATA GENERATOR (9 Days)
-// ==========================================
-const generateMockData = () => {
-  const daysData = {};
-  
-  for (let day = 1; day <= 9; day++) {
-    const scale = day / 9; // Scales from ~0.11 to 1.0 (Day 9 is the exact Figma design)
-    
-    daysData[day] = {
-      kpis: {
-        brent: { value: Math.round(72 + (16 * scale)), base: 72, change: (22.2 * scale).toFixed(1), isUp: true },
-        lng: { value: +(13.2 + (4.0 * scale)).toFixed(1), base: 13.2, change: (30.3 * scale).toFixed(1), isUp: true },
-        hormuz: { value: Math.round(53 - (8 * scale)), base: 53, change: (15.1 * scale).toFixed(1), isUp: false },
-        teu: { value: Math.round(28500 - (3700 * scale)), base: 28500, change: Math.round(13 * scale), isUp: false }
-      },
-      news: [
-        { id: 1, titleEn: `Day ${day}: Missile attack on military facilities`, titleFa: `روز ${day}: حمله موشکی به تأسیسات نظامی`, sourceEn: "Reuters", sourceFa: "رویترز", timeEn: "2 hours ago", timeFa: "۲ ساعت پیش", severity: "critical" },
-        { id: 2, titleEn: `Day ${day}: Explosion reported near US base`, titleFa: `روز ${day}: گزارش انفجار در نزدیکی پایگاه آمریکا`, sourceEn: "Al Jazeera", sourceFa: "الجزیره", timeEn: "4 hours ago", timeFa: "۴ ساعت پیش", severity: "medium" },
-        { id: 3, titleEn: `Day ${day}: Drone interceptions ongoing`, titleFa: `روز ${day}: ادامه رهگیری پهپادها`, sourceEn: "BBC", sourceFa: "بی‌بی‌سی", timeEn: "6 hours ago", timeFa: "۶ ساعت پیش", severity: "normal" }
-      ],
-      energy: {
-        brent: { price: Math.round(72 + (16 * scale)), change: (22.2 * scale).toFixed(1) },
-        lng: { price: +(13.2 + (4.0 * scale)).toFixed(1), change: (30.3 * scale).toFixed(1) },
-        gasoline: { price: +(3.3 + (1.1 * scale)).toFixed(1), change: (33.3 * scale).toFixed(1) }
-      },
-      traffic: {
-        tankersPassed: { current: Math.round(24 - (6 * scale)), change: Math.round(25 * scale) },
-        tankersInTraffic: { current: Math.round(8 + (4 * scale)) },
-        cargoPassed: { current: Math.round(22 - (2 * scale)), change: Math.round(9 * scale) },
-        cargoInTraffic: { current: Math.round(10 + (5 * scale)) }
-      },
-      gatherings: {
-        total: Math.round(12 + (35 * scale)),
-        change: Math.round(292 * scale),
-        cities: [
-          { nameEn: "Tehran", nameFa: "تهران", count: Math.round(12 * scale) || 1 },
-          { nameEn: "Mashhad", nameFa: "مشهد", count: Math.round(8 * scale) || 1 },
-          { nameEn: "Isfahan", nameFa: "اصفهان", count: Math.round(6 * scale) || 1 },
-          { nameEn: "Shiraz", nameFa: "شیراز", count: Math.round(5 * scale) || 1 },
-          { nameEn: "Other Cities", nameFa: "سایر شهرها", count: Math.round(16 * scale) || 1 }
-        ]
-      },
-      martyrs: {
-        today: Math.round(50 + (74 * scale)),
-        womenChildren: Math.round(15 + (28 * scale)),
-        womenChildrenPercent: Math.round(35 * scale) || 10,
-        total: 46000 + Math.round(584 * scale),
-        day: 512 + day
-      }
-    };
-  }
-  return daysData;
-};
-
-const mockDataByDay = generateMockData();
-
-const sourcesData = [
-  { en: "Reuters", fa: "رویترز (Reuters)" },
-  { en: "Al Jazeera", fa: "الجزیره (Al Jazeera)" },
-  { en: "BBC", fa: "بی‌بی‌سی (BBC)" },
-  { en: "CNN", fa: "سی‌ان‌ان (CNN)" },
-  { en: "France 24", fa: "فرانس ۲۴ (France 24)" },
-  { en: "Sky News", fa: "اسکای نیوز (Sky News)" },
-  { en: "NY Times", fa: "نیویورک تایمز (NY Times)" },
-  { en: "The Guardian", fa: "گاردین (The Guardian)" }
-];
-
-// ==========================================
-// 3. TRANSLATION DICTIONARY
+// 2. TRANSLATION DICTIONARY
 // ==========================================
 const dict = {
   en: {
@@ -156,11 +91,9 @@ const dict = {
 };
 
 // ==========================================
-// 4. SUB-COMPONENTS
+// 3. SUB-COMPONENTS
 // ==========================================
-
 const Header = ({ lang, setLang, t, currentTime }) => {
-  // Format Date & Time dynamically based on language (Gregorian vs Jalali)
   const formattedDate = currentTime.toLocaleDateString(lang === 'fa' ? 'fa-IR' : 'en-US', {
     year: 'numeric', month: 'long', day: 'numeric'
   });
@@ -252,7 +185,7 @@ const FireRangeCard = ({ lang, t, data }) => (
   </div>
 );
 
-const EnergyMarketCard = ({ lang, t, data }) => (
+const EnergyMarketCard = ({ t, data }) => (
   <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col">
     <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
       <BarChart3 className="text-yellow-500" size={18} /> {t.energyStatus}
@@ -292,7 +225,7 @@ const EnergyMarketCard = ({ lang, t, data }) => (
   </div>
 );
 
-const TrafficCard = ({ lang, t, data }) => (
+const TrafficCard = ({ t, data }) => (
   <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col">
     <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
       <Ship className="text-blue-500" size={18} /> {t.hormuzTraffic}
@@ -335,15 +268,14 @@ const TrafficCard = ({ lang, t, data }) => (
   </div>
 );
 
-const SmallCardsRow = ({ lang, t, data }) => (
+const SmallCardsRow = ({ lang, t, data, sources }) => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-    {/* News Sources */}
     <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800">
       <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
         <Newspaper className="text-blue-500" size={18} /> {t.newsSources}
       </h2>
       <div className="grid grid-cols-2 gap-3">
-        {sourcesData.map((src, i) => (
+        {sources.map((src, i) => (
           <div key={i} className="bg-zinc-800/50 text-zinc-400 text-xs py-2 px-3 rounded-lg text-center border border-zinc-700/50">
             {lang === 'en' ? src.en : src.fa}
           </div>
@@ -351,7 +283,6 @@ const SmallCardsRow = ({ lang, t, data }) => (
       </div>
     </div>
 
-    {/* Gatherings */}
     <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800">
       <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
         <Radio className="text-yellow-500" size={18} /> {t.nightGatherings}
@@ -379,10 +310,9 @@ const SmallCardsRow = ({ lang, t, data }) => (
       </div>
     </div>
 
-    {/* Martyrs */}
     <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col justify-between">
       <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-        <AlertTriangle className="text-red-500" size={18} /> {t.martStats || t.martyrsStats}
+        <AlertTriangle className="text-red-500" size={18} /> {t.martyrsStats}
       </h2>
       <div className="bg-red-600 text-white p-4 rounded-xl flex justify-between items-center mb-4">
         <span className="font-medium text-sm">{t.totalMartyrsToday}</span>
@@ -413,12 +343,10 @@ const SmallCardsRow = ({ lang, t, data }) => (
 );
 
 const Footer = ({ t, currentDay, setCurrentDay }) => {
-  // Calculate width for the active blue bar inside the slider
   const sliderPercentage = ((currentDay - 1) / 8) * 100;
 
   return (
     <div className="mt-6 space-y-4">
-      {/* Timeline Slider */}
       <div className="bg-[#1e1e24] p-4 rounded-xl border border-zinc-800 flex items-center gap-4">
         <button className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 hover:bg-blue-500 transition-colors">
           <Play size={16} className="ml-1" />
@@ -427,16 +355,12 @@ const Footer = ({ t, currentDay, setCurrentDay }) => {
           <div className="absolute top-0 left-0 text-red-500 text-xs font-medium">Feb 27, 2026</div>
           <div className="absolute top-0 right-0 text-green-500 text-xs font-medium">{t.today}</div>
           
-          {/* Custom Range Input Container */}
           <div className="relative h-2 w-full rounded-full bg-zinc-800">
-            
-            {/* Filled blue track */}
             <div 
               className="absolute left-0 top-0 h-full bg-blue-600 rounded-full pointer-events-none transition-all duration-200"
               style={{ width: `${sliderPercentage}%` }}
             ></div>
             
-            {/* The Invisible interactive slider */}
             <input 
               type="range" 
               min="1" 
@@ -446,13 +370,11 @@ const Footer = ({ t, currentDay, setCurrentDay }) => {
               className="absolute w-full top-1/2 -translate-y-1/2 opacity-0 cursor-pointer z-20"
             />
             
-            {/* Custom thumb visual */}
             <div 
               className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-blue-400 rounded-full border-2 border-zinc-900 pointer-events-none transition-all duration-200 shadow-[0_0_10px_rgba(96,165,250,0.5)]"
               style={{ left: `calc(${sliderPercentage}% - 8px)` }}
             ></div>
             
-            {/* Floating Label */}
             <div 
               className="absolute -top-7 -translate-x-1/2 bg-zinc-800 text-zinc-300 text-[10px] px-2 py-1 rounded transition-all duration-200 pointer-events-none"
               style={{ left: `${sliderPercentage}%` }}
@@ -463,7 +385,6 @@ const Footer = ({ t, currentDay, setCurrentDay }) => {
         </div>
       </div>
 
-      {/* Bottom Actions */}
       <div className="bg-[#1e1e24] p-4 rounded-xl border border-zinc-800 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <span className="text-zinc-500 text-sm">{t.techUsed}</span>
@@ -485,23 +406,27 @@ const Footer = ({ t, currentDay, setCurrentDay }) => {
 };
 
 // ==========================================
-// 5. MAIN DASHBOARD COMPONENT
+// 4. MAIN DASHBOARD COMPONENT
 // ==========================================
 export default function RegionalDashboard() {
   const [lang, setLang] = useState('en');
   const [currentDay, setCurrentDay] = useState(9); // Default to Day 9
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Keep time updated every minute safely on client side
   useEffect(() => {
-    setCurrentTime(new Date()); // Fixes hydration mismatch by setting immediately on mount
+    setCurrentTime(new Date());
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
 
   const t = dict[lang];
   const direction = lang === 'fa' ? 'rtl' : 'ltr';
-  const activeData = mockDataByDay[currentDay];
+  
+  // Connect to imported JSON data
+  const activeData = dashboardData.days[currentDay.toString()];
+  const sourcesData = dashboardData.sources;
+
+  if (!activeData) return <div className="p-8 text-white">Loading data...</div>;
 
   return (
     <div 
@@ -511,7 +436,6 @@ export default function RegionalDashboard() {
       <div className="max-w-7xl mx-auto">
         <Header lang={lang} setLang={setLang} t={t} currentTime={currentTime} />
 
-        {/* Top KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <KPICard 
             title={t.brentOil} value={activeData.kpis.brent.value} base={activeData.kpis.brent.base} 
@@ -531,17 +455,14 @@ export default function RegionalDashboard() {
           />
         </div>
 
-        {/* Middle Main Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <FireRangeCard lang={lang} t={t} data={activeData} />
-          <EnergyMarketCard lang={lang} t={t} data={activeData} />
-          <TrafficCard lang={lang} t={t} data={activeData} />
+          <EnergyMarketCard t={t} data={activeData} />
+          <TrafficCard t={t} data={activeData} />
         </div>
 
-        {/* Bottom Small Cards */}
-        <SmallCardsRow lang={lang} t={t} data={activeData} />
+        <SmallCardsRow lang={lang} t={t} data={activeData} sources={sourcesData} />
 
-        {/* Footer & Timeline */}
         <Footer t={t} currentDay={currentDay} setCurrentDay={setCurrentDay} />
       </div>
     </div>
