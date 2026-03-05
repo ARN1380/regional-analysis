@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Inter, Vazirmatn } from 'next/font/google';
 import { 
   TrendingUp, TrendingDown, Flame, BarChart3, Ship, 
-  Newspaper, Radio, AlertTriangle, Play, Download 
+  Newspaper, Radio, AlertTriangle, Play, Pause, Download 
 } from 'lucide-react';
 
 // Import the JSON file
@@ -279,7 +279,6 @@ const AnalyticsRow = ({ appLanguage, uiTranslations, dailyMetrics }) => (
         <Newspaper className="text-blue-500" size={18} /> {uiTranslations.newsSources}
       </h2>
       <div className="grid grid-cols-2 gap-3">
-        {/* Mapping directly from the updated day-specific sources array */}
         {dailyMetrics.sources.map((src, i) => (
           <div 
             key={i} 
@@ -352,7 +351,7 @@ const AnalyticsRow = ({ appLanguage, uiTranslations, dailyMetrics }) => (
   </div>
 );
 
-const TimelineFooter = ({ appLanguage, uiTranslations, selectedDay, setSelectedDay }) => {
+const TimelineFooter = ({ appLanguage, uiTranslations, selectedDay, setSelectedDay, isPlaying, togglePlay }) => {
   const sliderPercentage = ((selectedDay - 1) / 8) * 100;
   const isRtl = appLanguage === 'fa';
   
@@ -361,8 +360,17 @@ const TimelineFooter = ({ appLanguage, uiTranslations, selectedDay, setSelectedD
   return (
     <div className="mt-6 space-y-4">
       <div className="bg-[#1e1e24] p-4 rounded-xl border border-zinc-800 flex items-center gap-5">
-        <button className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 hover:bg-blue-500 hover:scale-105 transition-all shadow-lg shadow-blue-900/20">
-          <Play size={16} className={isRtl ? "mr-1" : "ml-1"} fill="currentColor" />
+        
+        {/* Updated Play/Pause Button */}
+        <button 
+          onClick={togglePlay}
+          className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 hover:bg-blue-500 hover:scale-105 transition-all shadow-lg shadow-blue-900/20"
+        >
+          {isPlaying ? (
+            <Pause size={16} fill="currentColor" />
+          ) : (
+            <Play size={16} className={isRtl ? "mr-1" : "ml-1"} fill="currentColor" />
+          )}
         </button>
         
         <div className="flex-1 relative pt-6 pb-2 group">
@@ -384,7 +392,11 @@ const TimelineFooter = ({ appLanguage, uiTranslations, selectedDay, setSelectedD
               min="1" 
               max="9" 
               value={selectedDay}
-              onChange={(e) => setSelectedDay(Number(e.target.value))}
+              onChange={(e) => {
+                // If user manually changes the slider while it's playing, pause it.
+                if (isPlaying) togglePlay();
+                setSelectedDay(Number(e.target.value));
+              }}
               className="absolute w-full top-1/2 -translate-y-1/2 opacity-0 cursor-pointer z-20 h-6"
               dir={isRtl ? 'rtl' : 'ltr'}
             />
@@ -434,12 +446,45 @@ export default function RegionalDashboard() {
   const [appLanguage, setAppLanguage] = useState('en');
   const [selectedDay, setSelectedDay] = useState(9); 
   const [currentTimeState, setCurrentTimeState] = useState(new Date());
+  
+  // New state to manage timeline playback
+  const [isPlaying, setIsPlaying] = useState(false);
 
+  // Effect to manage real-world clock
   useEffect(() => {
     setCurrentTimeState(new Date());
     const timer = setInterval(() => setCurrentTimeState(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
+
+  // Effect to manage the Timeline Playback
+  useEffect(() => {
+    let playInterval;
+    
+    if (isPlaying) {
+      playInterval = setInterval(() => {
+        setSelectedDay((prevDay) => {
+          if (prevDay >= 9) {
+            setIsPlaying(false); // Stop playing when we reach the last day
+            return 9;
+          }
+          return prevDay + 1;
+        });
+      }, 500); //   miliseconds per day. Adjust speed here if needed.
+    }
+    
+    return () => {
+      if (playInterval) clearInterval(playInterval);
+    };
+  }, [isPlaying]);
+
+  const togglePlay = () => {
+    // If we are at the end and the user clicks play, restart from day 1
+    if (selectedDay === 9 && !isPlaying) {
+      setSelectedDay(1);
+    }
+    setIsPlaying(!isPlaying);
+  };
 
   const uiTranslations = uiDictionary[appLanguage];
   const layoutDirection = appLanguage === 'fa' ? 'rtl' : 'ltr';
@@ -497,7 +542,9 @@ export default function RegionalDashboard() {
           appLanguage={appLanguage}
           uiTranslations={uiTranslations} 
           selectedDay={selectedDay} 
-          setSelectedDay={setSelectedDay} 
+          setSelectedDay={setSelectedDay}
+          isPlaying={isPlaying}
+          togglePlay={togglePlay}
         />
 
       </div>
