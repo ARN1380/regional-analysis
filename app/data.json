@@ -1,14 +1,4 @@
 {
-  "sources": [
-    { "en": "Reuters", "fa": "رویترز (Reuters)" },
-    { "en": "Al Jazeera", "fa": "الجزیره (Al Jazeera)" },
-    { "en": "BBC", "fa": "بی‌بی‌سی (BBC)" },
-    { "en": "CNN", "fa": "سی‌ان‌ان (CNN)" },
-    { "en": "France 24", "fa": "فرانس ۲۴ (France 24)" },
-    { "en": "Sky News", "fa": "اسکای نیوز (Sky News)" },
-    { "en": "NY Times", "fa": "نیویورک تایمز (NY Times)" },
-    { "en": "The Guardian", "fa": "گاردین (The Guardian)" }
-  ],
   "days": {
     "1": {
       "kpis": { "brent": { "value": 73, "base": 72, "change": "1.4", "isUp": true }, "lng": { "value": 13.5, "base": 13.2, "change": "2.2", "isUp": true }, "hormuz": { "value": 52, "base": 53, "change": "1.8", "isUp": false }, "teu": { "value": 28100, "base": 28500, "change": 1.4, "isUp": false } },
@@ -18,6 +8,14 @@
         { "id": 3, "titleEn": "Global stock markets show early signs of volatility", "titleFa": "نشانه‌های اولیه نوسان در بازارهای سهام جهانی", "sourceEn": "NY Times", "sourceFa": "نیویورک تایمز", "timeEn": "5 hours ago", "timeFa": "۵ ساعت پیش", "severity": "normal" },
         { "id": 4, "titleEn": "Naval patrols increased near critical maritime chokepoints", "titleFa": "افزایش گشت‌های دریایی در نزدیکی گذرگاه‌های حیاتی", "sourceEn": "Al Jazeera", "sourceFa": "الجزیره", "timeEn": "7 hours ago", "timeFa": "۷ ساعت پیش", "severity": "medium" },
         { "id": 5, "titleEn": "UN Security Council schedules emergency closed-door meeting", "titleFa": "برنامه‌ریزی نشست اضطراری و غیرعلنی شورای امنیت", "sourceEn": "CNN", "sourceFa": "سی‌ان‌ان", "timeEn": "9 hours ago", "timeFa": "۹ ساعت پیش", "severity": "medium" }
+      ],
+      "sources": [
+        { "en": "Reuters", "fa": "رویترز (Reuters)" },
+        { "en": "BBC", "fa": "بی‌بی‌سی (BBC)" },
+        { "en": "NY Times", "fa": "نیویورک تایمز (NY Times)" },
+        { "en": "Al Jazeera", "fa": "الجزیره (Al Jazeera)" },
+        { "en": "CNN", "fa": "سی‌ان‌ان (CNN)" },
+        { "en": "France 24", "fa": "فرانس ۲۴ (France 24)" }
       ],
       "energy": { "brent": { "price": 73, "change": "1.4" }, "lng": { "price": 13.5, "change": "2.2" }, "gasoline": { "price": 3.4, "change": "3.0" } },
       "traffic": { "tankersPassed": { "current": 23, "change": -4 }, "tankersInTraffic": { "current": 7 }, "cargoPassed": { "current": 22, "change": 0 }, "cargoInTraffic": { "current": 10 } },
@@ -33,6 +31,14 @@
         { "id": 4, "titleEn": "Oil prices jump 3% amid fears of supply chain disruptions", "titleFa": "جهش ۳ درصدی قیمت نفت در پی نگرانی از اختلال در عرضه", "sourceEn": "NY Times", "sourceFa": "نیویورک تایمز", "timeEn": "6 hours ago", "timeFa": "۶ ساعت پیش", "severity": "medium" },
         { "id": 5, "titleEn": "Foreign ministries issue highest-level travel warnings", "titleFa": "صدور بالاترین سطح هشدار مسافرتی توسط وزارتخانه‌های خارجه", "sourceEn": "France 24", "sourceFa": "فرانس ۲۴", "timeEn": "8 hours ago", "timeFa": "۸ ساعت پیش", "severity": "normal" }
       ],
+      "sources": [
+        { "en": "Al Jazeera", "fa": "الجزیره (Al Jazeera)" },
+        { "en": "Reuters", "fa": "رویترز (Reuters)" },
+        { "en": "Sky News", "fa": "اسکای نیوز (Sky News)" },
+        { "en": "NY Times", "fa": "نیویورک تایمز (NY Times)" },
+        { "en": "France 24", "fa": "فرانس ۲۴ (France 24)" },
+        { "en": "BBC", "fa": "بی‌بی‌سی (BBC)" }
+      ],
       "energy": { "brent": { "price": 75, "change": "4.1" }, "lng": { "price": 13.9, "change": "5.3" }, "gasoline": { "price": 3.5, "change": "6.0" } },
       "traffic": { "tankersPassed": { "current": 22, "change": -8 }, "tankersInTraffic": { "current": 8 }, "cargoPassed": { "current": 21, "change": -4 }, "cargoInTraffic": { "current": 11 } },
       "gatherings": { "total": 18, "change": 50, "cities": [ { "nameEn": "Tehran", "nameFa": "تهران", "count": 6 }, { "nameEn": "Mashhad", "nameFa": "مشهد", "count": 3 }, { "nameEn": "Isfahan", "nameFa": "اصفهان", "count": 2 }, { "nameEn": "Shiraz", "nameFa": "شیراز", "count": 2 }, { "nameEn": "Other Cities", "nameFa": "سایر شهرها", "count": 5 } ] },
@@ -46,6 +52,14 @@
         { "id": 3, "titleEn": "Embassies begin evacuating non-essential personnel", "titleFa": "سفارتخانه‌ها خروج کارکنان غیرضروری را آغاز کردند", "sourceEn": "BBC", "sourceFa": "بی‌بی‌سی", "timeEn": "5 hours ago", "timeFa": "۵ ساعت پیش", "severity": "medium" },
         { "id": 4, "titleEn": "Drone strikes target communication infrastructure", "titleFa": "حملات پهپادی زیرساخت‌های ارتباطی را هدف قرار دادند", "sourceEn": "Reuters", "sourceFa": "رویترز", "timeEn": "7 hours ago", "timeFa": "۷ ساعت پیش", "severity": "critical" },
         { "id": 5, "titleEn": "Regional leaders call for immediate de-escalation", "titleFa": "درخواست رهبران منطقه برای کاهش فوری تنش‌ها", "sourceEn": "Al Jazeera", "sourceFa": "الجزیره", "timeEn": "9 hours ago", "timeFa": "۹ ساعت پیش", "severity": "normal" }
+      ],
+      "sources": [
+        { "en": "CNN", "fa": "سی‌ان‌ان (CNN)" },
+        { "en": "The Guardian", "fa": "گاردین (The Guardian)" },
+        { "en": "BBC", "fa": "بی‌بی‌سی (BBC)" },
+        { "en": "Reuters", "fa": "رویترز (Reuters)" },
+        { "en": "Al Jazeera", "fa": "الجزیره (Al Jazeera)" },
+        { "en": "NY Times", "fa": "نیویورک تایمز (NY Times)" }
       ],
       "energy": { "brent": { "price": 77, "change": "6.9" }, "lng": { "price": 14.4, "change": "9.0" }, "gasoline": { "price": 3.6, "change": "9.0" } },
       "traffic": { "tankersPassed": { "current": 21, "change": -12 }, "tankersInTraffic": { "current": 9 }, "cargoPassed": { "current": 21, "change": -4 }, "cargoInTraffic": { "current": 12 } },
@@ -61,6 +75,14 @@
         { "id": 4, "titleEn": "Complete closure of northern airspace announced", "titleFa": "اعلام بسته شدن کامل حریم هوایی شمالی", "sourceEn": "BBC", "sourceFa": "بی‌بی‌سی", "timeEn": "8 hours ago", "timeFa": "۸ ساعت پیش", "severity": "medium" },
         { "id": 5, "titleEn": "Refugee movement increases at border crossings", "titleFa": "افزایش تردد پناهجویان در گذرگاه‌های مرزی", "sourceEn": "France 24", "sourceFa": "فرانس ۲۴", "timeEn": "10 hours ago", "timeFa": "۱۰ ساعت پیش", "severity": "normal" }
       ],
+      "sources": [
+        { "en": "Sky News", "fa": "اسکای نیوز (Sky News)" },
+        { "en": "Reuters", "fa": "رویترز (Reuters)" },
+        { "en": "Al Jazeera", "fa": "الجزیره (Al Jazeera)" },
+        { "en": "BBC", "fa": "بی‌بی‌سی (BBC)" },
+        { "en": "France 24", "fa": "فرانس ۲۴ (France 24)" },
+        { "en": "CNN", "fa": "سی‌ان‌ان (CNN)" }
+      ],
       "energy": { "brent": { "price": 79, "change": "9.7" }, "lng": { "price": 14.9, "change": "12.8" }, "gasoline": { "price": 3.8, "change": "15.1" } },
       "traffic": { "tankersPassed": { "current": 20, "change": -16 }, "tankersInTraffic": { "current": 9 }, "cargoPassed": { "current": 20, "change": -9 }, "cargoInTraffic": { "current": 12 } },
       "gatherings": { "total": 30, "change": 150, "cities": [ { "nameEn": "Tehran", "nameFa": "تهران", "count": 8 }, { "nameEn": "Mashhad", "nameFa": "مشهد", "count": 5 }, { "nameEn": "Isfahan", "nameFa": "اصفهان", "count": 4 }, { "nameEn": "Shiraz", "nameFa": "شیراز", "count": 3 }, { "nameEn": "Other Cities", "nameFa": "سایر شهرها", "count": 10 } ] },
@@ -74,6 +96,14 @@
         { "id": 3, "titleEn": "Severe internet outages disrupt financial markets", "titleFa": "قطعی شدید اینترنت بازارهای مالی را مختل کرد", "sourceEn": "NY Times", "sourceFa": "نیویورک تایمز", "timeEn": "3 hours ago", "timeFa": "۳ ساعت پیش", "severity": "medium" },
         { "id": 4, "titleEn": "OPEC considers emergency meeting as Brent crosses $80", "titleFa": "بررسی نشست اضطراری اوپک همزمان با عبور برنت از ۸۰ دلار", "sourceEn": "France 24", "sourceFa": "فرانس ۲۴", "timeEn": "5 hours ago", "timeFa": "۵ ساعت پیش", "severity": "medium" },
         { "id": 5, "titleEn": "International aid agencies warn of humanitarian crisis", "titleFa": "هشدار آژانس‌های امدادی بین‌المللی نسبت به بحران انسانی", "sourceEn": "The Guardian", "sourceFa": "گاردین", "timeEn": "7 hours ago", "timeFa": "۷ ساعت پیش", "severity": "normal" }
+      ],
+      "sources": [
+        { "en": "Reuters", "fa": "رویترز (Reuters)" },
+        { "en": "CNN", "fa": "سی‌ان‌ان (CNN)" },
+        { "en": "NY Times", "fa": "نیویورک تایمز (NY Times)" },
+        { "en": "France 24", "fa": "فرانس ۲۴ (France 24)" },
+        { "en": "The Guardian", "fa": "گاردین (The Guardian)" },
+        { "en": "Al Jazeera", "fa": "الجزیره (Al Jazeera)" }
       ],
       "energy": { "brent": { "price": 82, "change": "13.8" }, "lng": { "price": 15.5, "change": "17.4" }, "gasoline": { "price": 4.0, "change": "21.2" } },
       "traffic": { "tankersPassed": { "current": 19, "change": -20 }, "tankersInTraffic": { "current": 10 }, "cargoPassed": { "current": 20, "change": -9 }, "cargoInTraffic": { "current": 13 } },
@@ -89,6 +119,14 @@
         { "id": 4, "titleEn": "Fuel rationing implemented in major metropolitan areas", "titleFa": "اجرای سهمیه‌بندی سوخت در کلان‌شهرهای بزرگ", "sourceEn": "Reuters", "sourceFa": "رویترز", "timeEn": "6 hours ago", "timeFa": "۶ ساعت پیش", "severity": "medium" },
         { "id": 5, "titleEn": "Currency markets crash following latest military escalation", "titleFa": "سقوط بازارهای ارز در پی آخرین تشدید درگیری‌های نظامی", "sourceEn": "NY Times", "sourceFa": "نیویورک تایمز", "timeEn": "8 hours ago", "timeFa": "۸ ساعت پیش", "severity": "normal" }
       ],
+      "sources": [
+        { "en": "BBC", "fa": "بی‌بی‌سی (BBC)" },
+        { "en": "Al Jazeera", "fa": "الجزیره (Al Jazeera)" },
+        { "en": "CNN", "fa": "سی‌ان‌ان (CNN)" },
+        { "en": "Reuters", "fa": "رویترز (Reuters)" },
+        { "en": "NY Times", "fa": "نیویورک تایمز (NY Times)" },
+        { "en": "Sky News", "fa": "اسکای نیوز (Sky News)" }
+      ],
       "energy": { "brent": { "price": 84, "change": "16.6" }, "lng": { "price": 16.0, "change": "21.2" }, "gasoline": { "price": 4.1, "change": "24.2" } },
       "traffic": { "tankersPassed": { "current": 19, "change": -20 }, "tankersInTraffic": { "current": 11 }, "cargoPassed": { "current": 20, "change": -9 }, "cargoInTraffic": { "current": 13 } },
       "gatherings": { "total": 39, "change": 225, "cities": [ { "nameEn": "Tehran", "nameFa": "تهران", "count": 10 }, { "nameEn": "Mashhad", "nameFa": "مشهد", "count": 7 }, { "nameEn": "Isfahan", "nameFa": "اصفهان", "count": 5 }, { "nameEn": "Shiraz", "nameFa": "شیراز", "count": 4 }, { "nameEn": "Other Cities", "nameFa": "سایر شهرها", "count": 13 } ] },
@@ -102,6 +140,14 @@
         { "id": 3, "titleEn": "Satellite imagery reveals significant troop build-up", "titleFa": "تصاویر ماهواره‌ای نشان‌دهنده تجمع قابل‌توجه نیروهاست", "sourceEn": "NY Times", "sourceFa": "نیویورک تایمز", "timeEn": "5 hours ago", "timeFa": "۵ ساعت پیش", "severity": "medium" },
         { "id": 4, "titleEn": "Foreign nationals evacuated via military airlift operations", "titleFa": "تخلیه اتباع خارجی از طریق عملیات هوایی نظامی", "sourceEn": "France 24", "sourceFa": "فرانس ۲۴", "timeEn": "7 hours ago", "timeFa": "۷ ساعت پیش", "severity": "medium" },
         { "id": 5, "titleEn": "Negotiators establish temporary humanitarian corridors", "titleFa": "مذاکره‌کنندگان کریدورهای بشردوستانه موقت ایجاد کردند", "sourceEn": "BBC", "sourceFa": "بی‌بی‌سی", "timeEn": "9 hours ago", "timeFa": "۹ ساعت پیش", "severity": "normal" }
+      ],
+      "sources": [
+        { "en": "Sky News", "fa": "اسکای نیوز (Sky News)" },
+        { "en": "Reuters", "fa": "رویترز (Reuters)" },
+        { "en": "NY Times", "fa": "نیویورک تایمز (NY Times)" },
+        { "en": "France 24", "fa": "فرانس ۲۴ (France 24)" },
+        { "en": "BBC", "fa": "بی‌بی‌سی (BBC)" },
+        { "en": "CNN", "fa": "سی‌ان‌ان (CNN)" }
       ],
       "energy": { "brent": { "price": 86, "change": "19.4" }, "lng": { "price": 16.5, "change": "25.0" }, "gasoline": { "price": 4.2, "change": "27.2" } },
       "traffic": { "tankersPassed": { "current": 18, "change": -25 }, "tankersInTraffic": { "current": 11 }, "cargoPassed": { "current": 20, "change": -9 }, "cargoInTraffic": { "current": 14 } },
@@ -117,6 +163,14 @@
         { "id": 4, "titleEn": "Secret diplomatic channels opened in neutral territory", "titleFa": "باز شدن کانال‌های دیپلماتیک محرمانه در قلمرو بی‌طرف", "sourceEn": "NY Times", "sourceFa": "نیویورک تایمز", "timeEn": "6 hours ago", "timeFa": "۶ ساعت پیش", "severity": "normal" },
         { "id": 5, "titleEn": "Cyber warfare escalates targeting regional water treatment facilities", "titleFa": "تشدید جنگ سایبری با هدف قرار دادن تاسیسات تصفیه آب منطقه", "sourceEn": "Al Jazeera", "sourceFa": "الجزیره", "timeEn": "8 hours ago", "timeFa": "۸ ساعت پیش", "severity": "critical" }
       ],
+      "sources": [
+        { "en": "CNN", "fa": "سی‌ان‌ان (CNN)" },
+        { "en": "Reuters", "fa": "رویترز (Reuters)" },
+        { "en": "The Guardian", "fa": "گاردین (The Guardian)" },
+        { "en": "NY Times", "fa": "نیویورک تایمز (NY Times)" },
+        { "en": "Al Jazeera", "fa": "الجزیره (Al Jazeera)" },
+        { "en": "Sky News", "fa": "اسکای نیوز (Sky News)" }
+      ],
       "energy": { "brent": { "price": 87, "change": "20.8" }, "lng": { "price": 16.9, "change": "28.0" }, "gasoline": { "price": 4.3, "change": "30.3" } },
       "traffic": { "tankersPassed": { "current": 18, "change": -25 }, "tankersInTraffic": { "current": 12 }, "cargoPassed": { "current": 20, "change": -9 }, "cargoInTraffic": { "current": 14 } },
       "gatherings": { "total": 45, "change": 275, "cities": [ { "nameEn": "Tehran", "nameFa": "تهران", "count": 11 }, { "nameEn": "Mashhad", "nameFa": "مشهد", "count": 8 }, { "nameEn": "Isfahan", "nameFa": "اصفهان", "count": 6 }, { "nameEn": "Shiraz", "nameFa": "شیراز", "count": 5 }, { "nameEn": "Other Cities", "nameFa": "سایر شهرها", "count": 15 } ] },
@@ -130,6 +184,14 @@
         { "id": 3, "titleEn": "Interception of unmanned drones in Haifa airspace", "titleFa": "رهگیری پهپادهای بدون سرنشین در آسمان حیفا", "sourceEn": "BBC", "sourceFa": "بی‌بی‌سی", "timeEn": "6 hours ago", "timeFa": "۶ ساعت پیش", "severity": "normal" },
         { "id": 4, "titleEn": "Regional leaders announce emergency joint defense pact", "titleFa": "رهبران منطقه پیمان دفاعی مشترک اضطراری را اعلام کردند", "sourceEn": "Sky News", "sourceFa": "اسکای نیوز", "timeEn": "7 hours ago", "timeFa": "۷ ساعت پیش", "severity": "medium" },
         { "id": 5, "titleEn": "Major oil corporations suspend Gulf extraction operations", "titleFa": "تعلیق عملیات استخراج در خلیج توسط شرکت‌های بزرگ نفتی", "sourceEn": "France 24", "sourceFa": "فرانس ۲۴", "timeEn": "9 hours ago", "timeFa": "۹ ساعت پیش", "severity": "critical" }
+      ],
+      "sources": [
+        { "en": "Reuters", "fa": "رویترز (Reuters)" },
+        { "en": "Al Jazeera", "fa": "الجزیره (Al Jazeera)" },
+        { "en": "BBC", "fa": "بی‌بی‌سی (BBC)" },
+        { "en": "Sky News", "fa": "اسکای نیوز (Sky News)" },
+        { "en": "France 24", "fa": "فرانس ۲۴ (France 24)" },
+        { "en": "NY Times", "fa": "نیویورک تایمز (NY Times)" }
       ],
       "energy": { "brent": { "price": 88, "change": "22.2" }, "lng": { "price": 17.2, "change": "30.3" }, "gasoline": { "price": 4.4, "change": "33.3" } },
       "traffic": { "tankersPassed": { "current": 18, "change": -25 }, "tankersInTraffic": { "current": 12 }, "cargoPassed": { "current": 20, "change": -9 }, "cargoInTraffic": { "current": 15 } },

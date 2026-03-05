@@ -7,7 +7,7 @@ import {
   Newspaper, Radio, AlertTriangle, Play, Download 
 } from 'lucide-react';
 
-// Import the JSON file from the same directory
+// Import the JSON file
 import dashboardData from './data.json'; 
 
 // ==========================================
@@ -19,7 +19,7 @@ const vazirmatn = Vazirmatn({ subsets: ['arabic'], display: 'swap' });
 // ==========================================
 // 2. TRANSLATION DICTIONARY
 // ==========================================
-const dict = {
+const uiDictionary = {
   en: {
     title: "Regional Conflict Analysis Dashboard",
     subtitle: "Daily monitoring of conflicts, energy markets, and Strait of Hormuz traffic",
@@ -93,11 +93,12 @@ const dict = {
 // ==========================================
 // 3. SUB-COMPONENTS
 // ==========================================
-const Header = ({ lang, setLang, t, currentTime }) => {
-  const formattedDate = currentTime.toLocaleDateString(lang === 'fa' ? 'fa-IR' : 'en-US', {
+const Header = ({ appLanguage, setAppLanguage, uiTranslations, currentTimeState }) => {
+  const isPersian = appLanguage === 'fa';
+  const formattedDate = currentTimeState.toLocaleDateString(isPersian ? 'fa-IR' : 'en-US', {
     year: 'numeric', month: 'long', day: 'numeric'
   });
-  const formattedTime = currentTime.toLocaleTimeString(lang === 'fa' ? 'fa-IR' : 'en-US', {
+  const formattedTime = currentTimeState.toLocaleTimeString(isPersian ? 'fa-IR' : 'en-US', {
     hour: '2-digit', minute: '2-digit', hour12: false
   });
 
@@ -105,36 +106,36 @@ const Header = ({ lang, setLang, t, currentTime }) => {
     <header className="flex flex-col items-center justify-center pt-8 pb-6">
       <div className="flex bg-zinc-800 rounded-lg p-1 mb-6 gap-2">
         <button 
-          onClick={() => setLang('fa')}
-          className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${lang === 'fa' ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white'}`}
+          onClick={() => setAppLanguage('fa')}
+          className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${isPersian ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white'}`}
         >
           فارسی IR
         </button>
         <button 
-          onClick={() => setLang('en')}
-          className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${lang === 'en' ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white'}`}
+          onClick={() => setAppLanguage('en')}
+          className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${!isPersian ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white'}`}
         >
           GB English
         </button>
       </div>
       <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-        {t.title} <span className="text-xl">🇮🇷</span>
+        {uiTranslations.title} <span className="text-xl">🇮🇷</span>
       </h1>
-      <p className="text-zinc-400 text-sm mb-1">{t.subtitle}</p>
-      <p className="text-zinc-500 text-xs flex gap-1 items-center" dir={lang === 'fa' ? 'rtl' : 'ltr'}>
-        {formattedDate} • {lang === 'fa' ? 'ساعت' : 'Time'} {formattedTime}
+      <p className="text-zinc-400 text-sm mb-1">{uiTranslations.subtitle}</p>
+      <p className="text-zinc-500 text-xs flex gap-1 items-center" dir={isPersian ? 'rtl' : 'ltr'}>
+        {formattedDate} • {isPersian ? 'ساعت' : 'Time'} {formattedTime}
       </p>
-      <p className="text-zinc-600 text-[10px] mt-1">{t.statsRef}</p>
+      <p className="text-zinc-600 text-[10px] mt-1">{uiTranslations.statsRef}</p>
     </header>
   );
 };
 
-const KPICard = ({ title, value, base, change, isUp, t, prefix = "", suffix = "" }) => (
-  <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col justify-between h-32">
+const MetricCard = ({ title, value, baseValue, percentageChange, isTrendingUp, uiTranslations, prefix = "", suffix = "" }) => (
+  <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col justify-between h-32 hover:border-zinc-700 transition-colors">
     <div className="flex justify-between items-start">
       <div>
         <h3 className="text-zinc-400 text-sm mb-1">{title}</h3>
-        <p className="text-zinc-600 text-xs">{t.compareWith}</p>
+        <p className="text-zinc-600 text-[11px]">{uiTranslations.compareWith}</p>
       </div>
       <div className="w-8 h-8 rounded bg-blue-500/10 flex items-center justify-center">
         <div className="w-4 h-4 bg-blue-500 rounded-sm"></div>
@@ -145,241 +146,262 @@ const KPICard = ({ title, value, base, change, isUp, t, prefix = "", suffix = ""
         {prefix}{value.toLocaleString()}{suffix}
       </div>
       <div className="flex flex-col items-end">
-        <span className="text-zinc-500 text-xs mb-1">{t.base} {prefix}{base}</span>
-        <span className={`text-sm flex items-center gap-1 ${isUp ? 'text-green-500' : 'text-red-500'}`}>
-          {isUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-          {change}%
+        <span className="text-zinc-500 text-xs mb-1">{uiTranslations.base} {prefix}{baseValue}</span>
+        <span className={`text-sm flex items-center gap-1 font-medium ${isTrendingUp ? 'text-green-500' : 'text-red-500'}`}>
+          {isTrendingUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
+          {percentageChange}%
         </span>
       </div>
     </div>
   </div>
 );
 
-const FireRangeCard = ({ lang, t, data }) => (
-  <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col">
+const IncidentMapCard = ({ appLanguage, uiTranslations, dailyMetrics }) => (
+  <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col h-full">
     <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-      <Flame className="text-red-500" size={18} /> {t.fireRange}
+      <Flame className="text-red-500" size={18} /> {uiTranslations.fireRange}
     </h2>
-    <div className="bg-zinc-900 rounded-lg h-40 mb-4 relative overflow-hidden flex items-center justify-center border border-zinc-800">
-      <span className="text-zinc-700">Map Visualization Placeholder</span>
+    <div className="bg-zinc-900 rounded-lg h-40 mb-4 shrink-0 relative overflow-hidden flex items-center justify-center border border-zinc-800">
+      <span className="text-zinc-700 text-sm">Map Visualization Placeholder</span>
     </div>
-    <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-      {data.news.map((item) => (
-        <div key={item.id} className="border-l-2 border-zinc-700 pl-3 rtl:border-r-2 rtl:border-l-0 rtl:pr-3 rtl:pl-0">
-          <h4 className="text-zinc-200 text-sm font-medium mb-1">
-            {lang === 'en' ? item.titleEn : item.titleFa}
+    
+    <div className="flex-1 overflow-y-auto max-h-52 space-y-4 pr-2 rtl:pr-0 rtl:pl-2 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
+      {dailyMetrics.news.map((newsItem) => (
+        <div key={newsItem.id} className="border-l-2 border-zinc-700 pl-3 rtl:border-r-2 rtl:border-l-0 rtl:pr-3 rtl:pl-0 hover:border-blue-500 transition-colors">
+          <h4 className="text-zinc-200 text-sm font-medium mb-1 leading-snug">
+            {appLanguage === 'en' ? newsItem.titleEn : newsItem.titleFa}
           </h4>
           <div className="flex justify-between text-xs text-zinc-500">
-            <span>{lang === 'en' ? item.sourceEn : item.sourceFa}</span>
-            <span>{lang === 'en' ? item.timeEn : item.timeFa}</span>
+            <span>{appLanguage === 'en' ? newsItem.sourceEn : newsItem.sourceFa}</span>
+            <span>{appLanguage === 'en' ? newsItem.timeEn : newsItem.timeFa}</span>
           </div>
         </div>
       ))}
     </div>
-    <div className="mt-4 pt-4 border-t border-zinc-800 flex items-center gap-4 text-xs">
-      <span className="text-zinc-500">{t.severity}</span>
-      <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500"></span> <span className="text-zinc-400">{t.critical}</span></div>
-      <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500"></span> <span className="text-zinc-400">{t.medium}</span></div>
-      <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> <span className="text-zinc-400">{t.normal}</span></div>
+
+    <div className="mt-4 pt-4 shrink-0 border-t border-zinc-800 flex items-center gap-4 text-xs">
+      <span className="text-zinc-500">{uiTranslations.severity}</span>
+      <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500"></span> <span className="text-zinc-400">{uiTranslations.critical}</span></div>
+      <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500"></span> <span className="text-zinc-400">{uiTranslations.medium}</span></div>
+      <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500"></span> <span className="text-zinc-400">{uiTranslations.normal}</span></div>
     </div>
   </div>
 );
 
-const EnergyMarketCard = ({ t, data }) => (
-  <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col">
+const EnergyMarketCard = ({ uiTranslations, dailyMetrics }) => (
+  <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col h-full">
     <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-      <BarChart3 className="text-yellow-500" size={18} /> {t.energyStatus}
+      <BarChart3 className="text-yellow-500" size={18} /> {uiTranslations.energyStatus}
     </h2>
-    <div className="bg-zinc-900 rounded-lg h-40 mb-6 flex items-center justify-center border border-zinc-800">
-       <span className="text-zinc-700">Line Chart Placeholder</span>
+    <div className="bg-zinc-900 rounded-lg h-40 mb-6 shrink-0 flex items-center justify-center border border-zinc-800">
+       <span className="text-zinc-700 text-sm">Line Chart Placeholder</span>
     </div>
-    <div className="space-y-4">
-      <div className="flex justify-between items-center bg-zinc-800/50 p-3 rounded-lg">
+    <div className="space-y-4 flex-1">
+      <div className="flex justify-between items-center bg-zinc-800/40 hover:bg-zinc-800/80 transition-colors p-3 rounded-lg">
         <div className="flex items-center gap-2 text-zinc-300 text-sm">
-           <span className="text-red-500">⛽</span> {t.brentOil}
+           <span className="text-red-500">⛽</span> {uiTranslations.brentOil}
         </div>
         <div className="text-end">
-          <div className="text-white font-bold">${data.energy.brent.price}</div>
-          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {data.energy.brent.change}%</div>
+          <div className="text-white font-bold">${dailyMetrics.energy.brent.price}</div>
+          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {dailyMetrics.energy.brent.change}%</div>
         </div>
       </div>
-      <div className="flex justify-between items-center bg-zinc-800/50 p-3 rounded-lg">
+      <div className="flex justify-between items-center bg-zinc-800/40 hover:bg-zinc-800/80 transition-colors p-3 rounded-lg">
         <div className="flex items-center gap-2 text-zinc-300 text-sm">
-           <span className="text-yellow-500">🔥</span> {t.lngGas}
+           <span className="text-yellow-500">🔥</span> {uiTranslations.lngGas}
         </div>
         <div className="text-end">
-          <div className="text-white font-bold">${data.energy.lng.price}</div>
-          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {data.energy.lng.change}%</div>
+          <div className="text-white font-bold">${dailyMetrics.energy.lng.price}</div>
+          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {dailyMetrics.energy.lng.change}%</div>
         </div>
       </div>
-      <div className="flex justify-between items-center bg-zinc-800/50 p-3 rounded-lg">
+      <div className="flex justify-between items-center bg-zinc-800/40 hover:bg-zinc-800/80 transition-colors p-3 rounded-lg">
         <div className="flex items-center gap-2 text-zinc-300 text-sm">
-           <span className="text-blue-500">🛢️</span> {t.usGasoline}
+           <span className="text-blue-500">🛢️</span> {uiTranslations.usGasoline}
         </div>
         <div className="text-end">
-          <div className="text-white font-bold">${data.energy.gasoline.price}</div>
-          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {data.energy.gasoline.change}%</div>
+          <div className="text-white font-bold">${dailyMetrics.energy.gasoline.price}</div>
+          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {dailyMetrics.energy.gasoline.change}%</div>
         </div>
       </div>
     </div>
   </div>
 );
 
-const TrafficCard = ({ t, data }) => (
-  <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col">
+const MarineTrafficCard = ({ uiTranslations, dailyMetrics }) => (
+  <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col h-full">
     <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-      <Ship className="text-blue-500" size={18} /> {t.hormuzTraffic}
+      <Ship className="text-blue-500" size={18} /> {uiTranslations.hormuzTraffic}
     </h2>
-    <div className="bg-zinc-900 rounded-lg h-32 mb-6 flex items-center justify-center border border-zinc-800">
-       <span className="text-zinc-700">World Map Placeholder</span>
+    <div className="bg-zinc-900 rounded-lg h-32 mb-6 shrink-0 flex items-center justify-center border border-zinc-800">
+       <span className="text-zinc-700 text-sm">World Map Placeholder</span>
     </div>
-    <div className="space-y-4">
-      <div className="flex justify-between items-center border-b border-zinc-800 pb-3">
+    <div className="space-y-4 flex-1">
+      <div className="flex justify-between items-center border-b border-zinc-800/50 pb-3">
         <div className="flex items-center gap-2 text-zinc-300 text-sm">
-           <Ship size={14} className="text-red-500" /> {t.tankersPassed}
+           <Ship size={14} className="text-red-500" /> {uiTranslations.tankersPassed}
         </div>
         <div className="text-end flex items-center gap-4">
-          <div className="text-red-500 text-xs flex items-center gap-1"><TrendingDown size={12}/> {data.traffic.tankersPassed.change}%</div>
-          <div className="text-white font-bold text-lg">{data.traffic.tankersPassed.current}</div>
+          <div className="text-red-500 text-xs flex items-center gap-1"><TrendingDown size={12}/> {Math.abs(dailyMetrics.traffic.tankersPassed.change)}%</div>
+          <div className="text-white font-bold text-lg">{dailyMetrics.traffic.tankersPassed.current}</div>
         </div>
       </div>
-      <div className="flex justify-between items-center border-b border-zinc-800 pb-3">
+      <div className="flex justify-between items-center border-b border-zinc-800/50 pb-3">
         <div className="flex items-center gap-2 text-zinc-300 text-sm">
-           <Ship size={14} className="text-blue-500" /> {t.tankersInTraffic}
+           <Ship size={14} className="text-blue-500" /> {uiTranslations.tankersInTraffic}
         </div>
-        <div className="text-white font-bold text-lg">{data.traffic.tankersInTraffic.current}</div>
+        <div className="text-white font-bold text-lg">{dailyMetrics.traffic.tankersInTraffic.current}</div>
       </div>
-      <div className="flex justify-between items-center border-b border-zinc-800 pb-3">
+      <div className="flex justify-between items-center border-b border-zinc-800/50 pb-3">
         <div className="flex items-center gap-2 text-zinc-300 text-sm">
-           <Ship size={14} className="text-yellow-500" /> {t.cargoPassed}
+           <Ship size={14} className="text-yellow-500" /> {uiTranslations.cargoPassed}
         </div>
          <div className="text-end flex items-center gap-4">
-          <div className="text-red-500 text-xs flex items-center gap-1"><TrendingDown size={12}/> {data.traffic.cargoPassed.change}%</div>
-          <div className="text-white font-bold text-lg">{data.traffic.cargoPassed.current}</div>
+          <div className="text-red-500 text-xs flex items-center gap-1"><TrendingDown size={12}/> {Math.abs(dailyMetrics.traffic.cargoPassed.change)}%</div>
+          <div className="text-white font-bold text-lg">{dailyMetrics.traffic.cargoPassed.current}</div>
         </div>
       </div>
        <div className="flex justify-between items-center">
         <div className="flex items-center gap-2 text-zinc-300 text-sm">
-           <Ship size={14} className="text-blue-300" /> {t.cargoInTraffic}
+           <Ship size={14} className="text-blue-300" /> {uiTranslations.cargoInTraffic}
         </div>
-        <div className="text-white font-bold text-lg">{data.traffic.cargoInTraffic.current}</div>
+        <div className="text-white font-bold text-lg">{dailyMetrics.traffic.cargoInTraffic.current}</div>
       </div>
     </div>
   </div>
 );
 
-const SmallCardsRow = ({ lang, t, data, sources }) => (
+const AnalyticsRow = ({ appLanguage, uiTranslations, dailyMetrics }) => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+    {/* News Sources Box */}
     <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800">
       <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-        <Newspaper className="text-blue-500" size={18} /> {t.newsSources}
+        <Newspaper className="text-blue-500" size={18} /> {uiTranslations.newsSources}
       </h2>
       <div className="grid grid-cols-2 gap-3">
-        {sources.map((src, i) => (
-          <div key={i} className="bg-zinc-800/50 text-zinc-400 text-xs py-2 px-3 rounded-lg text-center border border-zinc-700/50">
-            {lang === 'en' ? src.en : src.fa}
+        {/* Mapping directly from the updated day-specific sources array */}
+        {dailyMetrics.sources.map((src, i) => (
+          <div 
+            key={i} 
+            className="bg-zinc-800/40 hover:bg-zinc-700 hover:text-white transition-colors text-zinc-400 text-xs py-2.5 px-3 rounded-lg text-center border border-zinc-700/50"
+          >
+            {appLanguage === 'en' ? src.en : src.fa}
           </div>
         ))}
       </div>
     </div>
 
+    {/* Gatherings Box */}
     <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800">
       <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-        <Radio className="text-yellow-500" size={18} /> {t.nightGatherings}
+        <Radio className="text-yellow-500" size={18} /> {uiTranslations.nightGatherings}
       </h2>
-      <div className="flex justify-between items-end mb-6 pb-4 border-b border-zinc-800">
+      <div className="flex justify-between items-end mb-6 pb-4 border-b border-zinc-800/50">
         <div>
-           <p className="text-zinc-500 text-xs mb-1">{t.gatheringsToday}</p>
-           <p className="text-zinc-600 text-[10px]">{t.base} 12</p>
+          <p className="text-zinc-500 text-xs mb-1">{uiTranslations.gatheringsToday}</p>
+          <p className="text-zinc-600 text-[10px]">{uiTranslations.base} 12</p>
         </div>
         <div className="text-end">
           <div className="text-2xl font-bold text-white mb-1 flex items-center justify-end gap-2">
-             <AlertTriangle size={16} className="text-yellow-500"/> {data.gatherings.total}
+            <AlertTriangle size={16} className="text-yellow-500"/> {dailyMetrics.gatherings.total}
           </div>
-          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {data.gatherings.change}%</div>
+          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {dailyMetrics.gatherings.change}%</div>
         </div>
       </div>
-      <div className="space-y-2">
-        <p className="text-zinc-500 text-xs mb-3">{t.majorCities}</p>
-        {data.gatherings.cities.map((city, i) => (
+      <div className="space-y-2.5">
+        <p className="text-zinc-500 text-[11px] mb-3 uppercase tracking-wider">{uiTranslations.majorCities}</p>
+        {dailyMetrics.gatherings.cities.map((city, i) => (
           <div key={i} className="flex justify-between items-center text-sm">
-            <span className="text-zinc-300">{lang === 'en' ? city.nameEn : city.nameFa}</span>
-            <span className="text-white font-medium">{city.count}</span>
+            <span className="text-zinc-300">{appLanguage === 'en' ? city.nameEn : city.nameFa}</span>
+            <span className="text-white font-medium bg-zinc-800/50 px-2 py-0.5 rounded">{city.count}</span>
           </div>
         ))}
       </div>
     </div>
 
+    {/* Martyrs Box */}
     <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col justify-between">
       <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
-        <AlertTriangle className="text-red-500" size={18} /> {t.martyrsStats}
+        <AlertTriangle className="text-red-500" size={18} /> {uiTranslations.martyrsStats}
       </h2>
-      <div className="bg-red-600 text-white p-4 rounded-xl flex justify-between items-center mb-4">
-        <span className="font-medium text-sm">{t.totalMartyrsToday}</span>
-        <span className="text-3xl font-bold">{data.martyrs.today}</span>
+      <div className="bg-red-600/90 text-white p-4 rounded-xl flex justify-between items-center mb-4 shadow-lg shadow-red-900/20">
+        <span className="font-medium text-sm">{uiTranslations.totalMartyrsToday}</span>
+        <span className="text-3xl font-bold tracking-tight">{dailyMetrics.martyrs.today}</span>
       </div>
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 px-1">
         <div>
-          <p className="text-zinc-300 text-sm">{t.womenChildren}</p>
-          <p className="text-zinc-500 text-xs">{t.ofTotal}</p>
+          <p className="text-zinc-300 text-sm">{uiTranslations.womenChildren}</p>
+          <p className="text-zinc-500 text-[11px] mt-0.5">{uiTranslations.ofTotal}</p>
         </div>
         <div className="text-end">
-           <div className="text-white font-bold text-xl">{data.martyrs.womenChildren}</div>
-           <div className="text-yellow-500 text-xs">{data.martyrs.womenChildrenPercent}%</div>
+          <div className="text-white font-bold text-xl">{dailyMetrics.martyrs.womenChildren}</div>
+          <div className="text-yellow-500 text-xs font-medium">{dailyMetrics.martyrs.womenChildrenPercent}%</div>
         </div>
       </div>
-      <div className="bg-zinc-900 border border-zinc-700 p-4 rounded-xl">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-zinc-400 text-sm">{t.totalMartyrsSince}</span>
-          <span className="text-red-500 font-bold text-xl">{data.martyrs.total.toLocaleString()}</span>
+      <div className="bg-zinc-900/80 border border-zinc-700/50 p-4 rounded-xl">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-zinc-400 text-xs">{uiTranslations.totalMartyrsSince}</span>
+          <span className="text-red-500 font-bold text-lg">{dailyMetrics.martyrs.total.toLocaleString()}</span>
         </div>
-        <div className="w-full bg-zinc-800 rounded-full h-1 mt-2">
-           <div className="bg-red-600 h-1 rounded-full" style={{ width: '100%' }}></div>
+        <div className="w-full bg-zinc-800 rounded-full h-1.5 mt-2 overflow-hidden">
+          <div className="bg-gradient-to-r from-red-700 to-red-500 h-full rounded-full" style={{ width: '100%' }}></div>
         </div>
-        <div className="text-end text-zinc-600 text-[10px] mt-1">{t.day} {data.martyrs.day}</div>
+        <div className="text-end text-zinc-500 text-[10px] mt-2 font-medium">{uiTranslations.day} {dailyMetrics.martyrs.day}</div>
       </div>
     </div>
   </div>
 );
 
-const Footer = ({ t, currentDay, setCurrentDay }) => {
-  const sliderPercentage = ((currentDay - 1) / 8) * 100;
+const TimelineFooter = ({ appLanguage, uiTranslations, selectedDay, setSelectedDay }) => {
+  const sliderPercentage = ((selectedDay - 1) / 8) * 100;
+  const isRtl = appLanguage === 'fa';
+  
+  const sliderPositioning = isRtl ? 'right' : 'left';
 
   return (
     <div className="mt-6 space-y-4">
-      <div className="bg-[#1e1e24] p-4 rounded-xl border border-zinc-800 flex items-center gap-4">
-        <button className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 hover:bg-blue-500 transition-colors">
-          <Play size={16} className="ml-1" />
+      <div className="bg-[#1e1e24] p-4 rounded-xl border border-zinc-800 flex items-center gap-5">
+        <button className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 hover:bg-blue-500 hover:scale-105 transition-all shadow-lg shadow-blue-900/20">
+          <Play size={16} className={isRtl ? "mr-1" : "ml-1"} fill="currentColor" />
         </button>
+        
         <div className="flex-1 relative pt-6 pb-2 group">
-          <div className="absolute top-0 left-0 text-red-500 text-xs font-medium">Feb 27, 2026</div>
-          <div className="absolute top-0 right-0 text-green-500 text-xs font-medium">{t.today}</div>
+          <div className="absolute top-0 start-0 text-red-500 text-xs font-medium">Feb 27, 2026</div>
+          <div className="absolute top-0 end-0 text-green-500 text-xs font-medium">{uiTranslations.today}</div>
           
-          <div className="relative h-2 w-full rounded-full bg-zinc-800">
+          <div className="relative h-2 w-full rounded-full bg-zinc-800 overflow-visible">
+            
             <div 
-              className="absolute left-0 top-0 h-full bg-blue-600 rounded-full pointer-events-none transition-all duration-200"
-              style={{ width: `${sliderPercentage}%` }}
-            ></div>
+              className="absolute top-0 h-full bg-blue-600 rounded-full pointer-events-none transition-all duration-200 ease-out"
+              style={{ 
+                [sliderPositioning]: 0, 
+                width: `${sliderPercentage}%` 
+              }}
+            />
             
             <input 
               type="range" 
               min="1" 
               max="9" 
-              value={currentDay}
-              onChange={(e) => setCurrentDay(Number(e.target.value))}
-              className="absolute w-full top-1/2 -translate-y-1/2 opacity-0 cursor-pointer z-20"
+              value={selectedDay}
+              onChange={(e) => setSelectedDay(Number(e.target.value))}
+              className="absolute w-full top-1/2 -translate-y-1/2 opacity-0 cursor-pointer z-20 h-6"
+              dir={isRtl ? 'rtl' : 'ltr'}
             />
             
             <div 
-              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-blue-400 rounded-full border-2 border-zinc-900 pointer-events-none transition-all duration-200 shadow-[0_0_10px_rgba(96,165,250,0.5)]"
-              style={{ left: `calc(${sliderPercentage}% - 8px)` }}
-            ></div>
+              className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-blue-400 rounded-full border-2 border-zinc-900 pointer-events-none transition-all duration-200 ease-out shadow-[0_0_10px_rgba(96,165,250,0.5)]"
+              style={{ [sliderPositioning]: `calc(${sliderPercentage}% - 8px)` }}
+            />
             
             <div 
-              className="absolute -top-7 -translate-x-1/2 bg-zinc-800 text-zinc-300 text-[10px] px-2 py-1 rounded transition-all duration-200 pointer-events-none"
-              style={{ left: `${sliderPercentage}%` }}
+              className="absolute -top-8 bg-zinc-800 text-zinc-200 text-[10px] font-bold px-2 py-1 rounded transition-all duration-200 ease-out pointer-events-none border border-zinc-700"
+              style={{ 
+                [sliderPositioning]: `${sliderPercentage}%`,
+                transform: isRtl ? 'translateX(50%)' : 'translateX(-50%)'
+              }}
             >
-              Day {currentDay}
+              Day {selectedDay}
             </div>
           </div>
         </div>
@@ -387,18 +409,18 @@ const Footer = ({ t, currentDay, setCurrentDay }) => {
 
       <div className="bg-[#1e1e24] p-4 rounded-xl border border-zinc-800 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <span className="text-zinc-500 text-sm">{t.techUsed}</span>
+          <span className="text-zinc-500 text-sm">{uiTranslations.techUsed}</span>
           <div className="flex gap-2">
-            <div className="w-8 h-4 rounded bg-cyan-400"></div>
-            <div className="w-8 h-4 rounded bg-pink-400"></div>
-            <div className="w-8 h-4 rounded bg-green-500"></div>
-            <div className="w-8 h-4 rounded bg-emerald-600"></div>
-            <div className="w-8 h-4 rounded bg-green-400"></div>
+            <div className="w-8 h-4 rounded-sm bg-cyan-400 shadow-sm"></div>
+            <div className="w-8 h-4 rounded-sm bg-pink-400 shadow-sm"></div>
+            <div className="w-8 h-4 rounded-sm bg-green-500 shadow-sm"></div>
+            <div className="w-8 h-4 rounded-sm bg-emerald-600 shadow-sm"></div>
+            <div className="w-8 h-4 rounded-sm bg-green-400 shadow-sm"></div>
           </div>
         </div>
-        <button className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2 transition-colors">
+        <button className="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-all hover:shadow-lg hover:shadow-blue-900/20 active:scale-95">
           <Download size={16} />
-          {t.download}
+          {uiTranslations.download}
         </button>
       </div>
     </div>
@@ -409,61 +431,75 @@ const Footer = ({ t, currentDay, setCurrentDay }) => {
 // 4. MAIN DASHBOARD COMPONENT
 // ==========================================
 export default function RegionalDashboard() {
-  const [lang, setLang] = useState('en');
-  const [currentDay, setCurrentDay] = useState(9); // Default to Day 9
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [appLanguage, setAppLanguage] = useState('en');
+  const [selectedDay, setSelectedDay] = useState(9); 
+  const [currentTimeState, setCurrentTimeState] = useState(new Date());
 
   useEffect(() => {
-    setCurrentTime(new Date());
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    setCurrentTimeState(new Date());
+    const timer = setInterval(() => setCurrentTimeState(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
 
-  const t = dict[lang];
-  const direction = lang === 'fa' ? 'rtl' : 'ltr';
+  const uiTranslations = uiDictionary[appLanguage];
+  const layoutDirection = appLanguage === 'fa' ? 'rtl' : 'ltr';
   
-  // Connect to imported JSON data
-  const activeData = dashboardData.days[currentDay.toString()];
-  const sourcesData = dashboardData.sources;
+  const dailyMetrics = dashboardData.days[selectedDay.toString()];
 
-  if (!activeData) return <div className="p-8 text-white">Loading data...</div>;
+  if (!dailyMetrics) return <div className="p-8 text-white flex justify-center items-center min-h-screen">Loading operational data...</div>;
 
   return (
     <div 
-      dir={direction} 
-      className={`min-h-screen bg-[#121212] selection:bg-blue-500/30 text-zinc-100 p-4 md:p-8 ${lang === 'en' ? inter.className : vazirmatn.className}`}
+      dir={layoutDirection} 
+      className={`min-h-screen bg-[#121212] selection:bg-blue-500/30 text-zinc-100 p-4 md:p-8 ${appLanguage === 'en' ? inter.className : vazirmatn.className}`}
     >
       <div className="max-w-7xl mx-auto">
-        <Header lang={lang} setLang={setLang} t={t} currentTime={currentTime} />
+        
+        <Header 
+          appLanguage={appLanguage} 
+          setAppLanguage={setAppLanguage} 
+          uiTranslations={uiTranslations} 
+          currentTimeState={currentTimeState} 
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-          <KPICard 
-            title={t.brentOil} value={activeData.kpis.brent.value} base={activeData.kpis.brent.base} 
-            change={activeData.kpis.brent.change} isUp={activeData.kpis.brent.isUp} t={t} prefix="$"
+          <MetricCard 
+            title={uiTranslations.brentOil} value={dailyMetrics.kpis.brent.value} baseValue={dailyMetrics.kpis.brent.base} 
+            percentageChange={dailyMetrics.kpis.brent.change} isTrendingUp={dailyMetrics.kpis.brent.isUp} 
+            uiTranslations={uiTranslations} prefix="$"
           />
-          <KPICard 
-            title={t.lngGas} value={activeData.kpis.lng.value} base={activeData.kpis.lng.base} 
-            change={activeData.kpis.lng.change} isUp={activeData.kpis.lng.isUp} t={t} prefix="$"
+          <MetricCard 
+            title={uiTranslations.lngGas} value={dailyMetrics.kpis.lng.value} baseValue={dailyMetrics.kpis.lng.base} 
+            percentageChange={dailyMetrics.kpis.lng.change} isTrendingUp={dailyMetrics.kpis.lng.isUp} 
+            uiTranslations={uiTranslations} prefix="$"
           />
-          <KPICard 
-            title={t.hormuzTraffic} value={activeData.kpis.hormuz.value} base={activeData.kpis.hormuz.base} 
-            change={activeData.kpis.hormuz.change} isUp={activeData.kpis.hormuz.isUp} t={t}
+          <MetricCard 
+            title={uiTranslations.hormuzTraffic} value={dailyMetrics.kpis.hormuz.value} baseValue={dailyMetrics.kpis.hormuz.base} 
+            percentageChange={dailyMetrics.kpis.hormuz.change} isTrendingUp={dailyMetrics.kpis.hormuz.isUp} 
+            uiTranslations={uiTranslations}
           />
-          <KPICard 
-            title={"TEU Index"} value={activeData.kpis.teu.value} base={activeData.kpis.teu.base} 
-            change={activeData.kpis.teu.change} isUp={activeData.kpis.teu.isUp} t={t}
+          <MetricCard 
+            title={"TEU Index"} value={dailyMetrics.kpis.teu.value} baseValue={dailyMetrics.kpis.teu.base} 
+            percentageChange={dailyMetrics.kpis.teu.change} isTrendingUp={dailyMetrics.kpis.teu.isUp} 
+            uiTranslations={uiTranslations}
           />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <FireRangeCard lang={lang} t={t} data={activeData} />
-          <EnergyMarketCard t={t} data={activeData} />
-          <TrafficCard t={t} data={activeData} />
+          <IncidentMapCard appLanguage={appLanguage} uiTranslations={uiTranslations} dailyMetrics={dailyMetrics} />
+          <EnergyMarketCard uiTranslations={uiTranslations} dailyMetrics={dailyMetrics} />
+          <MarineTrafficCard uiTranslations={uiTranslations} dailyMetrics={dailyMetrics} />
         </div>
 
-        <SmallCardsRow lang={lang} t={t} data={activeData} sources={sourcesData} />
+        <AnalyticsRow appLanguage={appLanguage} uiTranslations={uiTranslations} dailyMetrics={dailyMetrics} />
 
-        <Footer t={t} currentDay={currentDay} setCurrentDay={setCurrentDay} />
+        <TimelineFooter 
+          appLanguage={appLanguage}
+          uiTranslations={uiTranslations} 
+          selectedDay={selectedDay} 
+          setSelectedDay={setSelectedDay} 
+        />
+
       </div>
     </div>
   );
