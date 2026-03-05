@@ -10,7 +10,7 @@ import {
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer 
 } from 'recharts';
-import { toPng } from 'html-to-image'; // <-- Import the image capture library
+import { toPng } from 'html-to-image';
 
 import dashboardData from './data.json'; 
 
@@ -150,7 +150,6 @@ const Header = ({ appLanguage, setAppLanguage, uiTranslations, currentTimeState 
 
   return (
     <header className="flex flex-col items-center justify-center pt-8 pb-6">
-      {/* Hide the language toggle from the final screenshot download using data-html2canvas-ignore */}
       <div className="flex bg-zinc-800 rounded-lg p-1 mb-6 gap-2" data-html2canvas-ignore>
         <button onClick={() => setAppLanguage('fa')} className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${isPersian ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white'}`}>فارسی IR</button>
         <button onClick={() => setAppLanguage('en')} className={`px-6 py-2 rounded-md text-sm font-medium transition-colors ${!isPersian ? 'bg-blue-600 text-white' : 'text-zinc-400 hover:text-white'}`}>GB English</button>
@@ -205,7 +204,17 @@ const IncidentMapCard = ({ appLanguage, uiTranslations, dailyMetrics, activeNews
         <DynamicMap locations={dailyMetrics.locations || []} newsList={dailyMetrics.news || []} activeNewsId={activeNewsId} setActiveNewsId={setActiveNewsId} appLanguage={appLanguage} />
       </div>
       
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto max-h-52 space-y-2 pr-2 rtl:pr-0 rtl:pl-2 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent">
+      {/* CUSTOM MODERN SCROLLBAR APPLIED HERE */}
+      <div 
+        ref={scrollContainerRef} 
+        className="flex-1 overflow-y-auto max-h-52 space-y-2 pr-2 rtl:pr-0 rtl:pl-2 
+          [&::-webkit-scrollbar]:w-1.5 
+          [&::-webkit-scrollbar-track]:bg-transparent 
+          [&::-webkit-scrollbar-thumb]:bg-zinc-700 
+          [&::-webkit-scrollbar-thumb]:rounded-full 
+          hover:[&::-webkit-scrollbar-thumb]:bg-zinc-500
+          transition-colors"
+      >
         {dailyMetrics.news.map((newsItem) => {
           const isActive = activeNewsId === newsItem.id;
           return (
@@ -427,15 +436,11 @@ const TimelineFooter = ({ appLanguage, uiTranslations, selectedDay, setSelectedD
             <div className="w-8 h-4 rounded-sm bg-green-400 shadow-sm"></div>
           </div>
         </div>
-        
-        {/* Function connected to the Download Button */}
         <button 
           onClick={handleDownload} 
           disabled={isDownloading}
-          className={`bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-all cursor-pointer 
-            ${isDownloading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-900/20 active:scale-95'}
-          `}
-          data-html2canvas-ignore // Hide this button from the final screenshot
+          className={`bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-all ${isDownloading ? 'opacity-60 cursor-not-allowed' : 'hover:bg-blue-500 hover:shadow-lg hover:shadow-blue-900/20 active:scale-95'}`}
+          data-html2canvas-ignore
         >
           {isDownloading ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
           {isDownloading ? (appLanguage === 'fa' ? 'در حال دریافت...' : 'Downloading...') : uiTranslations.download}
@@ -456,7 +461,6 @@ export default function RegionalDashboard() {
   const [activeNewsId, setActiveNewsId] = useState(null); 
   const [isDownloading, setIsDownloading] = useState(false);
 
-  // Ref to target the entire dashboard for the screenshot
   const dashboardRef = useRef(null);
 
   useEffect(() => {
@@ -492,15 +496,11 @@ export default function RegionalDashboard() {
     setIsPlaying(!isPlaying);
   };
 
-  // Image Download Function Handler
   const handleDownload = async () => {
     if (!dashboardRef.current) return;
     try {
       setIsDownloading(true);
-      const dataUrl = await toPng(dashboardRef.current, { 
-        quality: 0.95, 
-        backgroundColor: '#121212', // Keep the dark theme intact in the image
-      });
+      const dataUrl = await toPng(dashboardRef.current, { quality: 0.95, backgroundColor: '#121212' });
       const link = document.createElement('a');
       link.download = `regional-dashboard-day-${selectedDay}.png`;
       link.href = dataUrl;
@@ -535,40 +535,22 @@ export default function RegionalDashboard() {
   if (!dailyMetrics) return <div className="p-8 text-white flex justify-center items-center min-h-screen">Loading operational data...</div>;
 
   return (
-    <div 
-      // Attach the Ref here so html-to-image knows what to snapshot
-      ref={dashboardRef}
-      dir={layoutDirection} 
-      className={`min-h-screen bg-[#121212] selection:bg-blue-500/30 text-zinc-100 p-4 md:p-8 ${appLanguage === 'en' ? inter.className : vazirmatn.className}`}
-    >
+    <div ref={dashboardRef} dir={layoutDirection} className={`min-h-screen bg-[#121212] selection:bg-blue-500/30 text-zinc-100 p-4 md:p-8 ${appLanguage === 'en' ? inter.className : vazirmatn.className}`}>
       <div className="max-w-7xl mx-auto">
         <Header appLanguage={appLanguage} setAppLanguage={setAppLanguage} uiTranslations={uiTranslations} currentTimeState={currentTimeState} />
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <MetricCard title={uiTranslations.brentOil} value={dailyMetrics.kpis.brent.value} isFloatValue={false} baseValue={dailyMetrics.kpis.brent.base} percentageChange={dailyMetrics.kpis.brent.change} isTrendingUp={dailyMetrics.kpis.brent.isUp} uiTranslations={uiTranslations} prefix="$" />
           <MetricCard title={uiTranslations.lngGas} value={dailyMetrics.kpis.lng.value} isFloatValue={true} baseValue={dailyMetrics.kpis.lng.base} percentageChange={dailyMetrics.kpis.lng.change} isTrendingUp={dailyMetrics.kpis.lng.isUp} uiTranslations={uiTranslations} prefix="$" />
           <MetricCard title={uiTranslations.hormuzTraffic} value={dailyMetrics.kpis.hormuz.value} isFloatValue={false} baseValue={dailyMetrics.kpis.hormuz.base} percentageChange={dailyMetrics.kpis.hormuz.change} isTrendingUp={dailyMetrics.kpis.hormuz.isUp} uiTranslations={uiTranslations} />
           <MetricCard title={"TEU Index"} value={dailyMetrics.kpis.teu.value} isFloatValue={false} baseValue={dailyMetrics.kpis.teu.base} percentageChange={dailyMetrics.kpis.teu.change} isTrendingUp={dailyMetrics.kpis.teu.isUp} uiTranslations={uiTranslations} />
         </div>
-        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <IncidentMapCard appLanguage={appLanguage} uiTranslations={uiTranslations} dailyMetrics={dailyMetrics} activeNewsId={activeNewsId} setActiveNewsId={setActiveNewsId} />
           <EnergyMarketCard appLanguage={appLanguage} uiTranslations={uiTranslations} dailyMetrics={dailyMetrics} chartData={energyChartData} />
           <MarineTrafficCard uiTranslations={uiTranslations} dailyMetrics={dailyMetrics} />
         </div>
-        
         <AnalyticsRow appLanguage={appLanguage} uiTranslations={uiTranslations} dailyMetrics={dailyMetrics} />
-        
-        <TimelineFooter 
-          appLanguage={appLanguage} 
-          uiTranslations={uiTranslations} 
-          selectedDay={selectedDay} 
-          setSelectedDay={setSelectedDay} 
-          isPlaying={isPlaying} 
-          togglePlay={togglePlay} 
-          handleDownload={handleDownload}
-          isDownloading={isDownloading}
-        />
+        <TimelineFooter appLanguage={appLanguage} uiTranslations={uiTranslations} selectedDay={selectedDay} setSelectedDay={setSelectedDay} isPlaying={isPlaying} togglePlay={togglePlay} handleDownload={handleDownload} isDownloading={isDownloading} />
       </div>
     </div>
   );
