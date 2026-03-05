@@ -11,10 +11,56 @@ import {
 import dashboardData from './data.json'; 
 
 // ==========================================
-// 1. FONTS
+// 1. FONTS & ANIMATION HOOKS
 // ==========================================
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 const vazirmatn = Vazirmatn({ subsets: ['arabic'], display: 'swap' });
+
+// Custom hook for smooth number transitions
+const useAnimatedNumber = (targetValue, duration = 500) => {
+  const [value, setValue] = useState(targetValue);
+
+  useEffect(() => {
+    let startTimestamp;
+    let animationFrame;
+    const startValue = value;
+    const distance = targetValue - startValue;
+
+    if (distance === 0) return;
+
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      
+      // Easing function (easeOutQuart) for a smooth slow-down at the end
+      const easeProgress = 1 - Math.pow(1 - progress, 4);
+      
+      setValue(startValue + distance * easeProgress);
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(step);
+      } else {
+        setValue(targetValue);
+      }
+    };
+
+    animationFrame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [targetValue, duration]); 
+
+  return value;
+};
+
+// Reusable component that wraps the animated hook and handles formatting
+const AnimatedNumber = ({ value, isFloat = false, decimals = 1 }) => {
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  const animatedValue = useAnimatedNumber(numValue);
+  
+  if (isFloat) {
+    return <>{animatedValue.toFixed(decimals)}</>;
+  }
+  return <>{Math.round(animatedValue).toLocaleString()}</>;
+};
 
 // ==========================================
 // 2. TRANSLATION DICTIONARY
@@ -130,7 +176,7 @@ const Header = ({ appLanguage, setAppLanguage, uiTranslations, currentTimeState 
   );
 };
 
-const MetricCard = ({ title, value, baseValue, percentageChange, isTrendingUp, uiTranslations, prefix = "", suffix = "" }) => (
+const MetricCard = ({ title, value, isFloatValue = false, baseValue, percentageChange, isTrendingUp, uiTranslations, prefix = "", suffix = "" }) => (
   <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col justify-between h-32 hover:border-zinc-700 transition-colors">
     <div className="flex justify-between items-start">
       <div>
@@ -143,13 +189,13 @@ const MetricCard = ({ title, value, baseValue, percentageChange, isTrendingUp, u
     </div>
     <div className="flex justify-between items-end mt-4">
       <div className="text-3xl font-bold text-white">
-        {prefix}{value.toLocaleString()}{suffix}
+        {prefix}<AnimatedNumber value={value} isFloat={isFloatValue} />{suffix}
       </div>
       <div className="flex flex-col items-end">
         <span className="text-zinc-500 text-xs mb-1">{uiTranslations.base} {prefix}{baseValue}</span>
         <span className={`text-sm flex items-center gap-1 font-medium ${isTrendingUp ? 'text-green-500' : 'text-red-500'}`}>
           {isTrendingUp ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-          {percentageChange}%
+          <AnimatedNumber value={percentageChange} isFloat={true} />%
         </span>
       </div>
     </div>
@@ -202,8 +248,8 @@ const EnergyMarketCard = ({ uiTranslations, dailyMetrics }) => (
            <span className="text-red-500">⛽</span> {uiTranslations.brentOil}
         </div>
         <div className="text-end">
-          <div className="text-white font-bold">${dailyMetrics.energy.brent.price}</div>
-          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {dailyMetrics.energy.brent.change}%</div>
+          <div className="text-white font-bold">$<AnimatedNumber value={dailyMetrics.energy.brent.price} isFloat={false} /></div>
+          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> <AnimatedNumber value={dailyMetrics.energy.brent.change} isFloat={true} />%</div>
         </div>
       </div>
       <div className="flex justify-between items-center bg-zinc-800/40 hover:bg-zinc-800/80 transition-colors p-3 rounded-lg">
@@ -211,8 +257,8 @@ const EnergyMarketCard = ({ uiTranslations, dailyMetrics }) => (
            <span className="text-yellow-500">🔥</span> {uiTranslations.lngGas}
         </div>
         <div className="text-end">
-          <div className="text-white font-bold">${dailyMetrics.energy.lng.price}</div>
-          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {dailyMetrics.energy.lng.change}%</div>
+          <div className="text-white font-bold">$<AnimatedNumber value={dailyMetrics.energy.lng.price} isFloat={true} /></div>
+          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> <AnimatedNumber value={dailyMetrics.energy.lng.change} isFloat={true} />%</div>
         </div>
       </div>
       <div className="flex justify-between items-center bg-zinc-800/40 hover:bg-zinc-800/80 transition-colors p-3 rounded-lg">
@@ -220,8 +266,8 @@ const EnergyMarketCard = ({ uiTranslations, dailyMetrics }) => (
            <span className="text-blue-500">🛢️</span> {uiTranslations.usGasoline}
         </div>
         <div className="text-end">
-          <div className="text-white font-bold">${dailyMetrics.energy.gasoline.price}</div>
-          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {dailyMetrics.energy.gasoline.change}%</div>
+          <div className="text-white font-bold">$<AnimatedNumber value={dailyMetrics.energy.gasoline.price} isFloat={true} /></div>
+          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> <AnimatedNumber value={dailyMetrics.energy.gasoline.change} isFloat={true} />%</div>
         </div>
       </div>
     </div>
@@ -242,30 +288,30 @@ const MarineTrafficCard = ({ uiTranslations, dailyMetrics }) => (
            <Ship size={14} className="text-red-500" /> {uiTranslations.tankersPassed}
         </div>
         <div className="text-end flex items-center gap-4">
-          <div className="text-red-500 text-xs flex items-center gap-1"><TrendingDown size={12}/> {Math.abs(dailyMetrics.traffic.tankersPassed.change)}%</div>
-          <div className="text-white font-bold text-lg">{dailyMetrics.traffic.tankersPassed.current}</div>
+          <div className="text-red-500 text-xs flex items-center gap-1"><TrendingDown size={12}/> <AnimatedNumber value={Math.abs(dailyMetrics.traffic.tankersPassed.change)} />%</div>
+          <div className="text-white font-bold text-lg"><AnimatedNumber value={dailyMetrics.traffic.tankersPassed.current} /></div>
         </div>
       </div>
       <div className="flex justify-between items-center border-b border-zinc-800/50 pb-3">
         <div className="flex items-center gap-2 text-zinc-300 text-sm">
            <Ship size={14} className="text-blue-500" /> {uiTranslations.tankersInTraffic}
         </div>
-        <div className="text-white font-bold text-lg">{dailyMetrics.traffic.tankersInTraffic.current}</div>
+        <div className="text-white font-bold text-lg"><AnimatedNumber value={dailyMetrics.traffic.tankersInTraffic.current} /></div>
       </div>
       <div className="flex justify-between items-center border-b border-zinc-800/50 pb-3">
         <div className="flex items-center gap-2 text-zinc-300 text-sm">
            <Ship size={14} className="text-yellow-500" /> {uiTranslations.cargoPassed}
         </div>
          <div className="text-end flex items-center gap-4">
-          <div className="text-red-500 text-xs flex items-center gap-1"><TrendingDown size={12}/> {Math.abs(dailyMetrics.traffic.cargoPassed.change)}%</div>
-          <div className="text-white font-bold text-lg">{dailyMetrics.traffic.cargoPassed.current}</div>
+          <div className="text-red-500 text-xs flex items-center gap-1"><TrendingDown size={12}/> <AnimatedNumber value={Math.abs(dailyMetrics.traffic.cargoPassed.change)} />%</div>
+          <div className="text-white font-bold text-lg"><AnimatedNumber value={dailyMetrics.traffic.cargoPassed.current} /></div>
         </div>
       </div>
        <div className="flex justify-between items-center">
         <div className="flex items-center gap-2 text-zinc-300 text-sm">
            <Ship size={14} className="text-blue-300" /> {uiTranslations.cargoInTraffic}
         </div>
-        <div className="text-white font-bold text-lg">{dailyMetrics.traffic.cargoInTraffic.current}</div>
+        <div className="text-white font-bold text-lg"><AnimatedNumber value={dailyMetrics.traffic.cargoInTraffic.current} /></div>
       </div>
     </div>
   </div>
@@ -273,7 +319,6 @@ const MarineTrafficCard = ({ uiTranslations, dailyMetrics }) => (
 
 const AnalyticsRow = ({ appLanguage, uiTranslations, dailyMetrics }) => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-    {/* News Sources Box */}
     <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800">
       <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
         <Newspaper className="text-blue-500" size={18} /> {uiTranslations.newsSources}
@@ -290,7 +335,6 @@ const AnalyticsRow = ({ appLanguage, uiTranslations, dailyMetrics }) => (
       </div>
     </div>
 
-    {/* Gatherings Box */}
     <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800">
       <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
         <Radio className="text-yellow-500" size={18} /> {uiTranslations.nightGatherings}
@@ -302,9 +346,9 @@ const AnalyticsRow = ({ appLanguage, uiTranslations, dailyMetrics }) => (
         </div>
         <div className="text-end">
           <div className="text-2xl font-bold text-white mb-1 flex items-center justify-end gap-2">
-            <AlertTriangle size={16} className="text-yellow-500"/> {dailyMetrics.gatherings.total}
+            <AlertTriangle size={16} className="text-yellow-500"/> <AnimatedNumber value={dailyMetrics.gatherings.total} />
           </div>
-          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> {dailyMetrics.gatherings.change}%</div>
+          <div className="text-green-500 text-xs flex items-center justify-end gap-1"><TrendingUp size={12}/> <AnimatedNumber value={dailyMetrics.gatherings.change} />%</div>
         </div>
       </div>
       <div className="space-y-2.5">
@@ -312,20 +356,19 @@ const AnalyticsRow = ({ appLanguage, uiTranslations, dailyMetrics }) => (
         {dailyMetrics.gatherings.cities.map((city, i) => (
           <div key={i} className="flex justify-between items-center text-sm">
             <span className="text-zinc-300">{appLanguage === 'en' ? city.nameEn : city.nameFa}</span>
-            <span className="text-white font-medium bg-zinc-800/50 px-2 py-0.5 rounded">{city.count}</span>
+            <span className="text-white font-medium bg-zinc-800/50 px-2 py-0.5 rounded"><AnimatedNumber value={city.count} /></span>
           </div>
         ))}
       </div>
     </div>
 
-    {/* Martyrs Box */}
     <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col justify-between">
       <h2 className="text-white font-semibold mb-4 flex items-center gap-2">
         <AlertTriangle className="text-red-500" size={18} /> {uiTranslations.martyrsStats}
       </h2>
       <div className="bg-red-600/90 text-white p-4 rounded-xl flex justify-between items-center mb-4 shadow-lg shadow-red-900/20">
         <span className="font-medium text-sm">{uiTranslations.totalMartyrsToday}</span>
-        <span className="text-3xl font-bold tracking-tight">{dailyMetrics.martyrs.today}</span>
+        <span className="text-3xl font-bold tracking-tight"><AnimatedNumber value={dailyMetrics.martyrs.today} /></span>
       </div>
       <div className="flex justify-between items-center mb-6 px-1">
         <div>
@@ -333,14 +376,14 @@ const AnalyticsRow = ({ appLanguage, uiTranslations, dailyMetrics }) => (
           <p className="text-zinc-500 text-[11px] mt-0.5">{uiTranslations.ofTotal}</p>
         </div>
         <div className="text-end">
-          <div className="text-white font-bold text-xl">{dailyMetrics.martyrs.womenChildren}</div>
-          <div className="text-yellow-500 text-xs font-medium">{dailyMetrics.martyrs.womenChildrenPercent}%</div>
+          <div className="text-white font-bold text-xl"><AnimatedNumber value={dailyMetrics.martyrs.womenChildren} /></div>
+          <div className="text-yellow-500 text-xs font-medium"><AnimatedNumber value={dailyMetrics.martyrs.womenChildrenPercent} />%</div>
         </div>
       </div>
       <div className="bg-zinc-900/80 border border-zinc-700/50 p-4 rounded-xl">
         <div className="flex justify-between items-center mb-3">
           <span className="text-zinc-400 text-xs">{uiTranslations.totalMartyrsSince}</span>
-          <span className="text-red-500 font-bold text-lg">{dailyMetrics.martyrs.total.toLocaleString()}</span>
+          <span className="text-red-500 font-bold text-lg"><AnimatedNumber value={dailyMetrics.martyrs.total} /></span>
         </div>
         <div className="w-full bg-zinc-800 rounded-full h-1.5 mt-2 overflow-hidden">
           <div className="bg-gradient-to-r from-red-700 to-red-500 h-full rounded-full" style={{ width: '100%' }}></div>
@@ -360,8 +403,6 @@ const TimelineFooter = ({ appLanguage, uiTranslations, selectedDay, setSelectedD
   return (
     <div className="mt-6 space-y-4">
       <div className="bg-[#1e1e24] p-4 rounded-xl border border-zinc-800 flex items-center gap-5">
-        
-        {/* Updated Play/Pause Button */}
         <button 
           onClick={togglePlay}
           className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white shrink-0 hover:bg-blue-500 hover:scale-105 transition-all shadow-lg shadow-blue-900/20"
@@ -393,7 +434,6 @@ const TimelineFooter = ({ appLanguage, uiTranslations, selectedDay, setSelectedD
               max="9" 
               value={selectedDay}
               onChange={(e) => {
-                // If user manually changes the slider while it's playing, pause it.
                 if (isPlaying) togglePlay();
                 setSelectedDay(Number(e.target.value));
               }}
@@ -446,40 +486,33 @@ export default function RegionalDashboard() {
   const [appLanguage, setAppLanguage] = useState('en');
   const [selectedDay, setSelectedDay] = useState(9); 
   const [currentTimeState, setCurrentTimeState] = useState(new Date());
-  
-  // New state to manage timeline playback
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Effect to manage real-world clock
   useEffect(() => {
     setCurrentTimeState(new Date());
     const timer = setInterval(() => setCurrentTimeState(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
 
-  // Effect to manage the Timeline Playback
   useEffect(() => {
     let playInterval;
-    
     if (isPlaying) {
       playInterval = setInterval(() => {
         setSelectedDay((prevDay) => {
           if (prevDay >= 9) {
-            setIsPlaying(false); // Stop playing when we reach the last day
+            setIsPlaying(false);
             return 9;
           }
           return prevDay + 1;
         });
-      }, 500); //   miliseconds per day. Adjust speed here if needed.
+      }, 2000); // 2 seconds per day progression
     }
-    
     return () => {
       if (playInterval) clearInterval(playInterval);
     };
   }, [isPlaying]);
 
   const togglePlay = () => {
-    // If we are at the end and the user clicks play, restart from day 1
     if (selectedDay === 9 && !isPlaying) {
       setSelectedDay(1);
     }
@@ -488,7 +521,6 @@ export default function RegionalDashboard() {
 
   const uiTranslations = uiDictionary[appLanguage];
   const layoutDirection = appLanguage === 'fa' ? 'rtl' : 'ltr';
-  
   const dailyMetrics = dashboardData.days[selectedDay.toString()];
 
   if (!dailyMetrics) return <div className="p-8 text-white flex justify-center items-center min-h-screen">Loading operational data...</div>;
@@ -509,22 +541,22 @@ export default function RegionalDashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <MetricCard 
-            title={uiTranslations.brentOil} value={dailyMetrics.kpis.brent.value} baseValue={dailyMetrics.kpis.brent.base} 
+            title={uiTranslations.brentOil} value={dailyMetrics.kpis.brent.value} isFloatValue={false} baseValue={dailyMetrics.kpis.brent.base} 
             percentageChange={dailyMetrics.kpis.brent.change} isTrendingUp={dailyMetrics.kpis.brent.isUp} 
             uiTranslations={uiTranslations} prefix="$"
           />
           <MetricCard 
-            title={uiTranslations.lngGas} value={dailyMetrics.kpis.lng.value} baseValue={dailyMetrics.kpis.lng.base} 
+            title={uiTranslations.lngGas} value={dailyMetrics.kpis.lng.value} isFloatValue={true} baseValue={dailyMetrics.kpis.lng.base} 
             percentageChange={dailyMetrics.kpis.lng.change} isTrendingUp={dailyMetrics.kpis.lng.isUp} 
             uiTranslations={uiTranslations} prefix="$"
           />
           <MetricCard 
-            title={uiTranslations.hormuzTraffic} value={dailyMetrics.kpis.hormuz.value} baseValue={dailyMetrics.kpis.hormuz.base} 
+            title={uiTranslations.hormuzTraffic} value={dailyMetrics.kpis.hormuz.value} isFloatValue={false} baseValue={dailyMetrics.kpis.hormuz.base} 
             percentageChange={dailyMetrics.kpis.hormuz.change} isTrendingUp={dailyMetrics.kpis.hormuz.isUp} 
             uiTranslations={uiTranslations}
           />
           <MetricCard 
-            title={"TEU Index"} value={dailyMetrics.kpis.teu.value} baseValue={dailyMetrics.kpis.teu.base} 
+            title={"TEU Index"} value={dailyMetrics.kpis.teu.value} isFloatValue={false} baseValue={dailyMetrics.kpis.teu.base} 
             percentageChange={dailyMetrics.kpis.teu.change} isTrendingUp={dailyMetrics.kpis.teu.isUp} 
             uiTranslations={uiTranslations}
           />
