@@ -163,7 +163,7 @@ const Header = ({ appLanguage, setAppLanguage, uiTranslations, currentTimeState 
 };
 
 const MetricCard = ({ title, value, isFloatValue = false, baseValue, percentageChange, isTrendingUp, uiTranslations, prefix = "", suffix = "", subtitle = "", Icon }) => (
-  <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col justify-between h-36 hover:border-zinc-700 transition-colors shadow-sm w-full">
+  <div className="bg-[#1e1e24] p-5 rounded-xl border border-zinc-800 flex flex-col justify-between h-42 hover:border-zinc-700 transition-colors shadow-sm w-full">
     <div className="flex justify-between items-start">
       <div>
         <h3 className="text-zinc-400 text-xs font-medium mb-1">{title}</h3>
@@ -621,16 +621,16 @@ export default function RegionalDashboard() {
             ? "grid grid-cols-4 gap-6 mb-6" 
             : "flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 mb-6 md:pb-0 md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
           }>
-            <div className={isCapturing ? "w-full" : "w-[75vw] sm:w-[45vw] shrink-0 snap-center md:w-auto md:shrink"}>
+            <div className={isCapturing ? "w-full" : "w-[55vw] sm:w-[45vw] shrink-0 snap-center md:w-auto md:shrink"}>
               <MetricCard title={uiTranslations.brentOil} value={dailyMetrics.kpis.brent.value} isFloatValue={true} baseValue={dailyMetrics.kpis.brent.base} percentageChange={dailyMetrics.kpis.brent.change} isTrendingUp={dailyMetrics.kpis.brent.isUp} uiTranslations={uiTranslations} prefix="$" Icon={Droplet} />
             </div>
-            <div className={isCapturing ? "w-full" : "w-[75vw] sm:w-[45vw] shrink-0 snap-center md:w-auto md:shrink"}>
+            <div className={isCapturing ? "w-full" : "w-[55vw] sm:w-[45vw] shrink-0 snap-center md:w-auto md:shrink"}>
               <MetricCard title={uiTranslations.lngGas} value={dailyMetrics.kpis.lng.value} isFloatValue={true} baseValue={dailyMetrics.kpis.lng.base} percentageChange={dailyMetrics.kpis.lng.change} isTrendingUp={dailyMetrics.kpis.lng.isUp} uiTranslations={uiTranslations} prefix="$" Icon={Flame} />
             </div>
-            <div className={isCapturing ? "w-full" : "w-[75vw] sm:w-[45vw] shrink-0 snap-center md:w-auto md:shrink"}>
+            <div className={isCapturing ? "w-full" : "w-[55vw] sm:w-[45vw] shrink-0 snap-center md:w-auto md:shrink"}>
               <MetricCard title={uiTranslations.hormuzTraffic} value={dailyMetrics.kpis.hormuz.value} isFloatValue={false} baseValue={dailyMetrics.kpis.hormuz.base} percentageChange={dailyMetrics.kpis.hormuz.change} isTrendingUp={dailyMetrics.kpis.hormuz.isUp} uiTranslations={uiTranslations} Icon={Ship} />
             </div>
-            <div className={isCapturing ? "w-full" : "w-[75vw] sm:w-[45vw] shrink-0 snap-center md:w-auto md:shrink"}>
+            <div className={isCapturing ? "w-full" : "w-[55vw] sm:w-[45vw] shrink-0 snap-center md:w-auto md:shrink"}>
               <MetricCard title={"TEU Index"} subtitle={uiTranslations.teuDesc} value={dailyMetrics.kpis.teu.value} isFloatValue={false} baseValue={dailyMetrics.kpis.teu.base} percentageChange={dailyMetrics.kpis.teu.change} isTrendingUp={dailyMetrics.kpis.teu.isUp} uiTranslations={uiTranslations} Icon={Package} />
             </div>
           </div>
